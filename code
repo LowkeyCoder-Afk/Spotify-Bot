@@ -1,0 +1,102 @@
+import os
+import time
+import spotipy
+from spotipy.oauth2 import SpotifyOAuth
+from dotenv import load_dotenv
+from colorama import Fore, Style, init
+
+init(autoreset=True)
+load_dotenv()
+
+# ── Auth ──────────────────────────────────────────────────────────────────────
+def get_client():
+    return spotipy.Spotify(auth_manager=SpotifyOAuth(
+        client_id=os.getenv("SPOTIFY_CLIENT_ID"),
+        client_secret=os.getenv("SPOTIFY_CLIENT_SECRET"),
+        redirect_uri=os.getenv("SPOTIFY_REDIRECT_URI"),
+        scope="user-read-playback-state user-read-currently-playing",
+        cache_path=".cache",
+        open_browser=True
+    ))
+
+# ── Helpers ───────────────────────────────────────────────────────────────────
+def ms_to_time(ms):
+    s = ms // 1000
+    m, s = divmod(s, 60)
+    return f"{m}:{s:02d}"
+
+def progress_bar(progress_ms, duration_ms, width=35):
+    filled = int((progress_ms / duration_ms) * width)
+    bar    = f"{'█' * filled}{'░' * (width - filled)}"
+    return f"[{Fore.GREEN}{bar}{Style.RESET_ALL}]"
+
+def clear():
+    os.system("cls" if os.name == "nt" else "clear")
+
+# ── Display ───────────────────────────────────────────────────────────────────
+def show(sp):
+    data = sp.current_playback()
+
+    # Nothing playing
+    if not data or not data.get("item"):
+        print(f"\n{Fore.RED}  ⚠  Nothing is playing right now.{Style.RESET_ALL}")
+        print(f"  Open Spotify and play something!\n")
+        return
+
+    track    = data["item"]
+    name     = track["name"]
+    artists  = ", ".join(a["name"] for a in track["artists"])
+    album    = track["album"]["name"]
+    art_url  = track["album"]["images"][0]["url"]  # album art URL
+    progress = data["progress_ms"]
+    duration = track["duration_ms"]
+    volume   = data["device"]["volume_percent"]
+    device   = data["device"]["name"]
+    playing  = data["is_playing"]
+    shuffle  = "ON 🔀" if data["shuffle_state"] else "OFF"
+    repeat   = data["repeat_state"].upper()
+
+    status = f"{Fore.GREEN}▶  PLAYING{Style.RESET_ALL}" if playing \
+             else f"{Fore.YELLOW}⏸  PAUSED{Style.RESET_ALL}"
+
+    clear()
+    print(f"""
+{Fore.GREEN}╔══════════════════════════════════════════╗
+║        🎵  SPOTIFY NOW PLAYING  🎵       ║
+╚══════════════════════════════════════════╝{Style.RESET_ALL}
+
+  {status}
+
+  {Fore.CYAN}Song   :{Style.RESET_ALL}  {name}
+  {Fore.CYAN}Artist :{Style.RESET_ALL}  {artists}
+  {Fore.CYAN}Album  :{Style.RESET_ALL}  {album}
+
+  {progress_bar(progress, duration)}
+  {Fore.YELLOW}  {ms_to_time(progress)}  /  {ms_to_time(duration)}{Style.RESET_ALL}
+
+  {Fore.CYAN}Volume :{Style.RESET_ALL}  {volume}%   {Fore.CYAN}Device :{Style.RESET_ALL}  {device}
+  {Fore.CYAN}Shuffle:{Style.RESET_ALL}  {shuffle}   {Fore.CYAN}Repeat :{Style.RESET_ALL}  {repeat}
+
+  {Fore.GREEN}Album Art:{Style.RESET_ALL} {art_url}
+
+  {Fore.WHITE}(Refreshes every 5 seconds — Ctrl+C to quit){Style.RESET_ALL}
+""")
+
+# ── Main Loop ─────────────────────────────────────────────────────────────────
+def main():
+    print(f"\n{Fore.GREEN}  Connecting to Spotify...{Style.RESET_ALL}")
+    sp   = get_client()
+    user = sp.current_user()
+    print(f"  ✅ Logged in as: {Fore.CYAN}{user['display_name']}{Style.RESET_ALL}\n")
+    time.sleep(1)
+
+    try:
+        while True:
+            show(sp)
+            time.sleep(5)   # refresh every 5 seconds
+    except KeyboardInterrupt:
+        clear()
+        print(f"\n{Fore.GREEN}  Goodbye! 🎵{Style.RESET_ALL}\n")
+
+if __name__ == "__main__":
+    main()
