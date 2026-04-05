@@ -36,4 +36,48 @@ venv/
 spotipy==2.23.0
 python-dotenv==1.0.0
 colorama==0.4.6
-```
+
+**How to Run
+bash# 1. Create folder
+mkdir spotify-now-playing
+cd spotify-now-playing
+
+ 2. Virtual environment
+python -m venv venv
+venv\Scripts\activate        # Windows
+source venv/bin/activate     # Mac/Linux
+
+ 3. Install
+pip install -r requirements.txt
+
+ 4. Add your .env file
+
+ 5. Run
+python now_playing.py
+What you'll see in terminal:
+╔══════════════════════════════════════════╗
+║        🎵  SPOTIFY NOW PLAYING  🎵       ║
+╚══════════════════════════════════════════╝
+
+  ▶  PLAYING
+
+  Song   :  Blinding Lights
+  Artist :  The Weeknd
+  Album  :  After Hours
+
+  [███████████████░░░░░░░░░░░░░░░░░░░]
+    2:14  /  3:20
+
+  Volume :  72%   Device :  My Phone
+  Shuffle:  OFF   Repeat :  OFF
+
+  Album Art: https://i.scdn.co/image/...
+
+  (Refreshes every 5 seconds — Ctrl+C to quit)
+
+** Push to GitHub
+bashgit init
+git add .
+git commit -m "Spotify Now Playing bot with OAuth 2.0"
+git remote add origin https://github.com/LowkeyCoder-Afk/spotify-now-playing
+git push -u origin main
