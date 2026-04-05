@@ -1,5 +1,4 @@
 📁 Project Structure:
-```
 spotify-now-playing/
 ├── .env
 ├── .gitignore
@@ -7,36 +6,33 @@ spotify-now-playing/
 ├── README.md
 └── now_playing.py
 STEP 1 — Spotify Developer Setup
-```
 
 2- Go to developer.spotify.com → Login
 3- Click Dashboard → Create App
 Fill in:
-```
 App Name     → Now Playing Bot
    Redirect URI → http://localhost:8888/callback
    APIs         → Web API
-```
+
 4- Click Settings → copy Client ID and Client Secret
 STEP 2 — Files
 .env
-```
-SPOTIFY_CLIENT_ID=your_client_id_here
-SPOTIFY_CLIENT_SECRET=your_client_secret_here
-SPOTIFY_REDIRECT_URI=http://localhost:8888/callback
-```
-.gitignore
 
-```
+**SPOTIFY_CLIENT_ID=your_client_id_here
+**SPOTIFY_CLIENT_SECRET=your_client_secret_here
+**SPOTIFY_REDIRECT_URI=http://localhost:8888/callback
+
+**.gitignore
+
 .env
 .cache
 __pycache__/
 *.pyc
 venv/
-```
 
-requirements.txt
-```
+
+**requirements.txt
+
 spotipy==2.23.0
 python-dotenv==1.0.0
 colorama==0.4.6
